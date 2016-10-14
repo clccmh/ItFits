@@ -22,6 +22,9 @@
 
 function ItFits::create( %this )
 {
+    exec("./scripts/controls.cs");
+    exec("./gui/guiProfiles.cs");
+
     // We need a main "Scene" we can use as our game world.  The place where sceneObjects play.
     // Give it a global name "mainScene" since we may want to access it directly in our scripts.
     new Scene(mainScene);
@@ -32,7 +35,7 @@ function ItFits::create( %this )
     // Now that we have a Canvas, we need a viewport into the scene.
     // Give it a global name "mainWindow" since we may want to access it directly in our scripts.
     new SceneWindow(mainWindow);
-    mainWindow.profile = new GuiControlProfile();
+    //mainWindow.profile = new GuiControlProfile();
     Canvas.setContent(mainWindow);
 
     // Finally, connect our scene into the viewport (or sceneWindow).
@@ -46,20 +49,52 @@ function ItFits::create( %this )
 
     // let's do a little something to make sure we are up and running.
     // write "hello world!"  :)
-    %this.sayHello();
+    //%this.sayHello();
 
-    %block = new Sprite();
-    $block.Image = "ItFits:blocks";
-    //$block.frame = 2;
-    $block.position = "0 0";
-    %block.size = "5 5";
-    mainScene.add( %block );
+    %line1 = %this.makeLine(1, "0 0");
+    %line2 = %this.makeLine(1, "0 0");
+
+    mainScene.add(%line1);
+    mainScene.add(%line2);
+
+    %line2.setPosition("10 0");
+
+    new ScriptObject(InputManager);
+    mainWindow.addInputListener(InputManager);
 }
 
 //-----------------------------------------------------------------------------
 
 function ItFits::destroy( %this )
 {
+  InputManager.delete();
+}
+
+function ItFits::makeBlock(%this, %color, %pos)
+{
+    %block = new Sprite();
+    %block.Image = "ItFits:blocks";
+    %block.frame = %color;
+    %block.position = %pos;
+    %block.size = "5 5";
+    %block.SceneLayer = 1;
+    return %block;
+}
+
+function ItFits::makeLine(%this, %color, %pos)
+{
+    %line = new CompositeSprite();
+    %line.DefaultSpriteStride = "5";
+    %line.DefaultSpriteSize = "5";
+    %line.addSprite(%pos);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    %line.addSprite(%pos.x SPC %pos.y-5);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    %line.addSprite(%pos.x SPC %pos.y-10);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    %line.addSprite(%pos.x SPC %pos.y-15);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    return %line;
 }
 
 //-----------------------------------------------------------------------------
@@ -69,11 +104,12 @@ function ItFits::sayHello( %this )
 {
     %phrase = new ImageFont();
     %phrase.Image = "ItFits:font";
-       
+
     // Set the font size in both axis.  This is in world-units and not typicaly font "points".
     %phrase.FontSize = "4 4";
-    
+
     %phrase.TextAlignment = "Center";
     %phrase.Text = "It Fits!";
-    mainScene.add( %phrase );    
+    %phrase.SceneLayer = 20;
+    mainScene.add( %phrase );
 }
