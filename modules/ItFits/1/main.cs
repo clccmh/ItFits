@@ -51,8 +51,25 @@ function ItFits::create( %this )
     // write "hello world!"  :)
     //%this.sayHello();
 
-    %line1 = %this.makeLine(1, "0 0");
-    %line2 = %this.makeLine(1, "0 0");
+    %board = new Sprite();
+    %board.Image = "ItFits:board";
+    %board.position = "-25 0";
+    %board.size = "50 50";
+    %board.SceneLayer = 20;
+    mainScene.add(%board);
+
+    %line1 = %this.makeVertLine(2, "0 0");
+    %line2 = %this.makeVertLine(1, "0 0");
+    %line1.setSceneLayer(5);
+    %line2.setSceneLayer(5);
+    %line1.setBodyType("static");
+    echo("collision shape: ", %line1.createPolygonBoxCollisionShape(5, 20));
+    %line1.setCollisionLayers(5);
+    %line1.setCollisionGroup(5);
+    %line2.setBodyType("static");
+    echo("collision shape: ", %line2.createPolygonBoxCollisionShape(5, 20));
+    %line2.setCollisionLayers(5);
+    %line2.setCollisionGroup(5);
 
     mainScene.add(%line1);
     mainScene.add(%line2);
@@ -81,7 +98,7 @@ function ItFits::makeBlock(%this, %color, %pos)
     return %block;
 }
 
-function ItFits::makeLine(%this, %color, %pos)
+function ItFits::makeVertLine(%this, %color, %pos)
 {
     %line = new CompositeSprite();
     %line.DefaultSpriteStride = "5";
