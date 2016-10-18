@@ -49,7 +49,13 @@ function ItFits::create( %this )
 
     // let's do a little something to make sure we are up and running.
     // write "hello world!"  :)
-    //%this.sayHello();
+    $overlap = %this.overlapMessage();
+    mainScene.add($overlap);
+    $overlap.setVisible(false);
+
+    $notOnBoard = %this.notOnBoardMessage();
+    mainScene.add($notOnBoard);
+    $notOnBoard.setVisible(false);
 
     %board = new Sprite();
     %board.Image = "ItFits:board";
@@ -58,23 +64,7 @@ function ItFits::create( %this )
     %board.SceneLayer = 20;
     mainScene.add(%board);
 
-    %line1 = %this.makeVertLine(2, "0 0");
-    %line2 = %this.makeVertLine(1, "0 0");
-    %line1.setSceneLayer(5);
-    %line2.setSceneLayer(5);
-    %line1.setBodyType("static");
-    echo("collision shape: ", %line1.createPolygonBoxCollisionShape(5, 20));
-    %line1.setCollisionLayers(5);
-    %line1.setCollisionGroup(5);
-    %line2.setBodyType("static");
-    echo("collision shape: ", %line2.createPolygonBoxCollisionShape(5, 20));
-    %line2.setCollisionLayers(5);
-    %line2.setCollisionGroup(5);
-
-    mainScene.add(%line1);
-    mainScene.add(%line2);
-
-    %line2.setPosition("10 0");
+    %this.level1();
 
     new ScriptObject(InputManager);
     mainWindow.addInputListener(InputManager);
@@ -85,6 +75,32 @@ function ItFits::create( %this )
 function ItFits::destroy( %this )
 {
   InputManager.delete();
+}
+
+function ItFits::level1(%this)
+{
+  echo("Started Level 1");
+
+  %shapes[0] = %this.makeVertLine(getRandom(0, 4), "0 0");
+  %shapes[1] = %this.makeHorizLine(getRandom(0, 4), "0 0");
+  %shapes[2] = %this.makeLeftLHoriz(getRandom(0, 4), "0 0");
+  %shapes[3] = %this.makeZVert(getRandom(0, 4), "0 0");
+  %shapes[4] = %this.makeLeftLHorizInverse(getRandom(0, 4), "0 0");
+  %shapes[5] = %this.makeZHoriz(getRandom(0, 4), "0 0");
+
+  for (%i = 0; %i < 6; %i++)
+  {
+    %shapes[%i].setSceneLayer(5);
+    mainScene.add(%shapes[%i]);
+    %shapes[%i].setPosition("20 0");
+  }
+
+  //%line1.setBodyType("static");
+  //%line1.createPolygonBoxCollisionShape(5, 20);
+  //%line1.setCollisionLayers(5);
+  //%line2.setBodyType("static");
+  //%line2.createPolygonBoxCollisionShape(5, 20);
+  //%line2.setCollisionLayers(5);
 }
 
 function ItFits::makeBlock(%this, %color, %pos)
@@ -100,7 +116,7 @@ function ItFits::makeBlock(%this, %color, %pos)
 
 function ItFits::makeVertLine(%this, %color, %pos)
 {
-    %line = new CompositeSprite();
+    %line = new CompositeSprite(Shape);
     %line.DefaultSpriteStride = "5";
     %line.DefaultSpriteSize = "5";
     %line.addSprite(%pos);
@@ -114,19 +130,214 @@ function ItFits::makeVertLine(%this, %color, %pos)
     return %line;
 }
 
+function ItFits::makeHorizLine(%this, %color, %pos)
+{
+    %line = new CompositeSprite();
+    %line.DefaultSpriteStride = "5";
+    %line.DefaultSpriteSize = "5";
+    %line.addSprite(%pos);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    %line.addSprite(%pos.x-5 SPC %pos.y);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    %line.addSprite(%pos.x-10 SPC %pos.y);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    %line.addSprite(%pos.x-15 SPC %pos.y);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    return %line;
+}
+
+function ItFits::makeLeftLVert(%this, %color, %pos)
+{
+    %line = new CompositeSprite();
+    %line.DefaultSpriteStride = "5";
+    %line.DefaultSpriteSize = "5";
+    line.addSprite(%pos);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    %line.addSprite(%pos.x SPC %pos.y-5);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    %line.addSprite(%pos.x SPC %pos.y-10);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    %line.addSprite(%pos.x-5 SPC %pos.y-10);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    return %line;
+}
+
+function ItFits::makeRightLVert(%this, %color, %pos)
+{
+    %line = new CompositeSprite();
+    %line.DefaultSpriteStride = "5";
+    %line.DefaultSpriteSize = "5";
+    %line.addSprite(%pos);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    %line.addSprite(%pos.x SPC %pos.y-5);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    %line.addSprite(%pos.x SPC %pos.y-10);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    %line.addSprite(%pos.x+5 SPC %pos.y-10);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    return %line;
+}
+
+function ItFits::makeRightLHoriz(%this, %color, %pos)
+{
+    %line = new CompositeSprite();
+    %line.DefaultSpriteStride = "5";
+    %line.DefaultSpriteSize = "5";
+    %line.addSprite(%pos);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    %line.addSprite(%pos.x-5 SPC %pos.y);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    %line.addSprite(%pos.x-10 SPC %pos.y);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    %line.addSprite(%pos.x-10 SPC %pos.y-5);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    return %line;
+}
+
+function ItFits::makeLeftLHoriz(%this, %color, %pos)
+{
+    %line = new CompositeSprite();
+    %line.DefaultSpriteStride = "5";
+    %line.DefaultSpriteSize = "5";
+    %line.addSprite(%pos);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    %line.addSprite(%pos.x-5 SPC %pos.y);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    %line.addSprite(%pos.x-10 SPC %pos.y);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    %line.addSprite(%pos.x-10 SPC %pos.y+5);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    return %line;
+}
+
+function ItFits::makeRightLHorizInverse(%this, %color, %pos)
+{
+    %line = new CompositeSprite();
+    %line.DefaultSpriteStride = "5";
+    %line.DefaultSpriteSize = "5";
+    %line.addSprite(%pos);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    %line.addSprite(%pos.x SPC %pos.y+5);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    %line.addSprite(%pos.x-5 SPC %pos.y);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    %line.addSprite(%pos.x-10 SPC %pos.y);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    return %line;
+}
+
+function ItFits::makeLeftLHorizInverse(%this, %color, %pos)
+{
+    %line = new CompositeSprite();
+    %line.DefaultSpriteStride = "5";
+    %line.DefaultSpriteSize = "5";
+    %line.addSprite(%pos);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    %line.addSprite(%pos.x SPC %pos.y-5);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    %line.addSprite(%pos.x-5 SPC %pos.y);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    %line.addSprite(%pos.x-10 SPC %pos.y);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    return %line;
+}
+
+function ItFits::makeZVert(%this, %color, %pos)
+{
+    %line = new CompositeSprite();
+    %line.DefaultSpriteStride = "5";
+    %line.DefaultSpriteSize = "5";
+    %line.addSprite(%pos);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    %line.addSprite(%pos.x SPC %pos.y-5);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    %line.addSprite(%pos.x+5 SPC %pos.y-5);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    %line.addSprite(%pos.x+5 SPC %pos.y-10);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    return %line;
+}
+
+function ItFits::makeZVertInverse(%this, %color, %pos)
+{
+    %line = new CompositeSprite();
+    %line.DefaultSpriteStride = "5";
+    %line.DefaultSpriteSize = "5";
+    %line.addSprite(%pos);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    %line.addSprite(%pos.x SPC %pos.y-5);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    %line.addSprite(%pos.x-5 SPC %pos.y-5);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    %line.addSprite(%pos.x-5 SPC %pos.y-10);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    return %line;
+}
+
+function ItFits::makeZHoriz(%this, %color, %pos)
+{
+    %line = new CompositeSprite();
+    %line.DefaultSpriteStride = "5";
+    %line.DefaultSpriteSize = "5";
+    %line.addSprite(%pos);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    %line.addSprite(%pos.x-5 SPC %pos.y);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    %line.addSprite(%pos.x-5 SPC %pos.y-5);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    %line.addSprite(%pos.x-10 SPC %pos.y-5);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    return %line;
+}
+
+function ItFits::makeZHorizInverse(%this, %color, %pos)
+{
+    %line = new CompositeSprite();
+    %line.DefaultSpriteStride = "5";
+    %line.DefaultSpriteSize = "5";
+    %line.addSprite(%pos);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    %line.addSprite(%pos.x-5 SPC %pos.y);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    %line.addSprite(%pos.x-5 SPC %pos.y+5);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    %line.addSprite(%pos.x-10 SPC %pos.y+5);
+    %line.setSpriteImage("ItFits:blocks", %color);
+    return %line;
+}
+
+
 //-----------------------------------------------------------------------------
 
 
-function ItFits::sayHello( %this )
+function ItFits::overlapMessage( %this )
 {
     %phrase = new ImageFont();
     %phrase.Image = "ItFits:font";
 
     // Set the font size in both axis.  This is in world-units and not typicaly font "points".
-    %phrase.FontSize = "4 4";
+    %phrase.FontSize = "2 3";
 
     %phrase.TextAlignment = "Center";
-    %phrase.Text = "It Fits!";
-    %phrase.SceneLayer = 20;
-    mainScene.add( %phrase );
+
+    %phrase.Text = "Blocks cannot overlap. Try again!";
+    %phrase.SceneLayer = 0;
+    %phrase.setPosition(0,35);
+    return %phrase;
+}
+
+function ItFits::notOnBoardMessage( %this )
+{
+    %phrase = new ImageFont();
+    %phrase.Image = "ItFits:font";
+
+    // Set the font size in both axis.  This is in world-units and not typicaly font "points".
+    %phrase.FontSize = "2 3";
+
+    %phrase.TextAlignment = "Center";
+
+    %phrase.Text = "Block must be placed on the board. Try again!";
+    %phrase.SceneLayer = 0;
+    %phrase.setPosition(0,35);
+    return %phrase;
 }
