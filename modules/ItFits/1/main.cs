@@ -83,12 +83,12 @@ function ItFits::level1(%this)
 
   %shapes[0] = %this.makeVertLine(getRandom(0, 4), "0 0");
   %shapes[1] = %this.makeHorizLine(getRandom(0, 4), "0 0");
-  %shapes[2] = %this.makeLeftLHoriz(getRandom(0, 4), "0 0");
-  %shapes[3] = %this.makeZVert(getRandom(0, 4), "0 0");
-  %shapes[4] = %this.makeLeftLHorizInverse(getRandom(0, 4), "0 0");
-  %shapes[5] = %this.makeZHoriz(getRandom(0, 4), "0 0");
+  //%shapes[2] = %this.makeLeftLHoriz(getRandom(0, 4), "0 0");
+  //%shapes[3] = %this.makeZVert(getRandom(0, 4), "0 0");
+  //%shapes[4] = %this.makeLeftLHorizInverse(getRandom(0, 4), "0 0");
+  //%shapes[5] = %this.makeZHoriz(getRandom(0, 4), "0 0");
 
-  for (%i = 0; %i < 6; %i++)
+  for (%i = 0; %i < 2; %i++)
   {
     %shapes[%i].setSceneLayer(5);
     mainScene.add(%shapes[%i]);
@@ -116,8 +116,8 @@ function ItFits::makeBlock(%this, %color, %pos)
 
 function ItFits::makeVertLine(%this, %color, %pos)
 {
-    %line = new CompositeSprite(Shape);
-    %line.DefaultSpriteStride = "5";
+    %line = new CompositeSprite();
+    %line.DefaultSpriteStride = "1";
     %line.DefaultSpriteSize = "5";
     %line.addSprite(%pos);
     %line.setSpriteImage("ItFits:blocks", %color);
@@ -127,6 +127,8 @@ function ItFits::makeVertLine(%this, %color, %pos)
     %line.setSpriteImage("ItFits:blocks", %color);
     %line.addSprite(%pos.x SPC %pos.y-15);
     %line.setSpriteImage("ItFits:blocks", %color);
+    echo("vert line size: ", %line.getSize());
+    echo("vert line pos: ", %line.getPosition());
     return %line;
 }
 

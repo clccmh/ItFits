@@ -5,7 +5,6 @@ function InputManager::create(%this)
 
 function InputManager::onTouchDown(%this, %touchID, %worldposition)
 {
-  echo("worldposition: ", %worldposition);
   %picked = mainScene.pickPoint(%worldposition);
   for (%i=0; %i<%picked.count; %i++)
   {
@@ -21,19 +20,18 @@ function InputManager::onTouchDown(%this, %touchID, %worldposition)
       if (getWord(%picked, %i).getSceneLayer() != 20)
       {
         $myobj = getWord(%picked, %i);
-        echo("touched: ", $myobj);
       }
     }
   }
-  echo("scene layer: ", $myobj.getSceneLayer());
 }
 
 function InputManager::onTouchDragged(%this, %touchID, %worldposition)
 {
   if($myobj.getSceneLayer() != 20)
   {
-    $myobj.setPosition((mRound(%worldposition.X/5 - 2.5)+2.5)*5, (mRound(%worldposition.Y/5 + 2.5)-2.5)*5);
-    echo("pos: ", (mRound(%worldposition.X/5 - 2.5)+2.5)*5, (mRound(%worldposition.Y/5 + 2.5)-2.5)*5);
+    //echo("Position: ", (mRound(%worldposition.X/5 - 2.5)+2.5)*5, " ", (mRound(%worldposition.Y/5 + 2.5)-2.5)*5);
+    //$myobj.setPosition((mRound(%worldposition.X/5 - 2.5)+2.5)*5, (mRound(%worldposition.Y/5 + 2.5)-2.5)*5);
+    $myobj.setPosition(%worldposition);
   }
 }
 
@@ -41,15 +39,27 @@ function InputManager::onTouchUp(%this, %touchID, %worldposition)
 {
   if ($myobj != null) {
     %count = 0;
-    %onBoard = false;
+    %onBoard = true;
     %picked = mainScene.pickPoint(%worldposition);
     for (%i=0; %i<%picked.count; %i++)
     {
-      if (getWord(%picked, %i).getSceneLayer() == 20)
+      %sprite = getWord(%picked, %i);
+      if (%sprite.getSceneLayer() != 20)
       {
-        %onBoard = true;
-      }
-      else {
+        for (%x = 1; %x <= %sprite.getSpriteCount(); %x++)
+        {
+          echo("sprite position x: ", %sprite.getPosition());
+          %sprite.selectSpriteId(%x);
+          echo("Local position X : ", %sprite.getSpriteLocalPosition());
+          if (%this.isOverlapping((%worldposition.X + %sprite.getSpriteLocalPosition().X SPC %worldposition.Y + %sprite.getSpriteLocalPosition().Y)))
+          {
+            %count = 5;
+          }
+          if (!%this.isOnBoard((%worldposition.X + %sprite.getSpriteLocalPosition().X SPC %worldposition.Y + %sprite.getSpriteLocalPosition().Y)))
+          {
+            %onBoard = false;
+          }
+        }
         %count += 1;
       }
     }
@@ -71,4 +81,39 @@ function InputManager::onTouchUp(%this, %touchID, %worldposition)
       $myobj = null;
     }
   }
+}
+
+function InputManager::isOverlapping(%this, %worldposition)
+{
+  echo("passed worldposition: ", %worldposition);
+  %count = 0;
+  %picked = mainScene.pickPoint(%worldposition);
+  for (%i=0; %i<%picked.count; %i++)
+  {
+    %sprite = getWord(%picked, %i);
+    if (%sprite.getSceneLayer() != 20)
+    {
+      %count += 1;
+    }
+  }
+  if (%count > 1) {
+    echo("overlap at: ", %worldposition);
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function InputManager::isOnBoard(%this, %worldposition)
+{
+  %picked = mainScene.pickPoint(%worldposition);
+  for (%i=0; %i<%picked.count; %i++)
+  {
+    %sprite = getWord(%picked, %i);
+    if (%sprite.getSceneLayer() == 20)
+    {
+      return true;
+    }
+  }
+  return false;
 }
