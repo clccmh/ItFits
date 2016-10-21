@@ -44,30 +44,37 @@ function ItFits::create( %this )
     mainWindow.setCameraPosition( 0, 0 );
     mainWindow.setCameraSize( 100, 75 );
 
-    // load some scripts and variables
-    // exec("./scripts/someScript.cs");
+    %startingMessage = %this.startingMessage();
+    mainscene.add(%startingMessage);
+    %startingMessage.schedule(2000, "setVisible", false);
+    %this.schedule(2000, "setup");
+    %this.schedule(2000, "pileTutorial");
+    %this.schedule(4000, "boardTutorial");
+    //%this.schedule(6000, "easyMessage");
 
-    // let's do a little something to make sure we are up and running.
-    // write "hello world!"  :)
-    $overlap = %this.overlapMessage();
-    mainScene.add($overlap);
-    $overlap.setVisible(false);
+}
 
-    $notOnBoard = %this.notOnBoardMessage();
-    mainScene.add($notOnBoard);
-    $notOnBoard.setVisible(false);
+function ItFits::setup(%this)
+{
+  $overlap = %this.overlapMessage();
+  mainScene.add($overlap);
+  $overlap.setVisible(false);
 
-    %board = new Sprite();
-    %board.Image = "ItFits:board";
-    %board.position = "-25 0";
-    %board.size = "50 50";
-    %board.SceneLayer = 20;
-    mainScene.add(%board);
+  $notOnBoard = %this.notOnBoardMessage();
+  mainScene.add($notOnBoard);
+  $notOnBoard.setVisible(false);
 
-    %this.level1();
+  $board = new Sprite();
+  $board.Image = "ItFits:board";
+  $board.position = "-25 0";
+  $board.size = "50 50";
+  $board.SceneLayer = 20;
+  mainScene.add($board);
 
-    new ScriptObject(InputManager);
-    mainWindow.addInputListener(InputManager);
+  %this.level1();
+
+  new ScriptObject(InputManager);
+  mainWindow.addInputListener(InputManager);
 }
 
 //-----------------------------------------------------------------------------
@@ -81,18 +88,25 @@ function ItFits::level1(%this)
 {
   echo("Started Level 1");
 
-  %shapes[0] = %this.makeVertLine(getRandom(0, 4), "0 0");
-  %shapes[1] = %this.makeHorizLine(getRandom(0, 4), "0 0");
-  //%shapes[2] = %this.makeLeftLHoriz(getRandom(0, 4), "0 0");
-  //%shapes[3] = %this.makeZVert(getRandom(0, 4), "0 0");
-  //%shapes[4] = %this.makeLeftLHorizInverse(getRandom(0, 4), "0 0");
-  //%shapes[5] = %this.makeZHoriz(getRandom(0, 4), "0 0");
+  $shapes[0] = %this.makeVertLine(getRandom(0, 4), "0 0");
+  $shapes[1] = %this.makeHorizLine(getRandom(0, 4), "0 0");
+  $shapes[2] = %this.makeLeftLHoriz(getRandom(0, 4), "0 0");
+  $shapes[3] = %this.makeZVert(getRandom(0, 4), "0 0");
+  $shapes[4] = %this.makeLeftLHorizInverse(getRandom(0, 4), "0 0");
+  $shapes[5] = %this.makeZHoriz(getRandom(0, 4), "0 0");
+  $shapes[6] = %this.makeZHoriz(getRandom(0, 4), "0 0");
+  $shapes[7] = %this.makeZHoriz(getRandom(0, 4), "0 0");
+  $shapes[8] = %this.makeZVert(getRandom(0, 4), "0 0");
+  $shapes[9] = %this.makeZVert(getRandom(0, 4), "0 0");
+  $shapes[10] = %this.makeZVert(getRandom(0, 4), "0 0");
+  $shapes[11] = %this.makeZVert(getRandom(0, 4), "0 0");
+  $shapes[12] = %this.makeZVert(getRandom(0, 4), "0 0");
 
-  for (%i = 0; %i < 2; %i++)
+  for (%i = 0; %i < 13; %i++)
   {
-    %shapes[%i].setSceneLayer(5);
-    mainScene.add(%shapes[%i]);
-    %shapes[%i].setPosition("20 0");
+    $shapes[%i].setSceneLayer(5);
+    mainScene.add($shapes[%i]);
+    $shapes[%i].setPosition("20 0");
   }
 
   //%line1.setBodyType("static");
@@ -328,6 +342,21 @@ function ItFits::overlapMessage( %this )
     return %phrase;
 }
 
+function ItFits::startingMessage( %this )
+{
+    %phrase = new ImageFont();
+    %phrase.Image = "ItFits:font";
+
+    // Set the font size in both axis.  This is in world-units and not typicaly font "points".
+    %phrase.FontSize = "4 6";
+
+    %phrase.TextAlignment = "Center";
+
+    %phrase.Text = "It Fits!";
+    %phrase.SceneLayer = 0;
+    return %phrase;
+}
+
 function ItFits::notOnBoardMessage( %this )
 {
     %phrase = new ImageFont();
@@ -342,4 +371,46 @@ function ItFits::notOnBoardMessage( %this )
     %phrase.SceneLayer = 0;
     %phrase.setPosition(0,35);
     return %phrase;
+}
+
+function ItFits::pileTutorial(%this)
+{
+  $board.setVisible(false);
+  %pile = new ImageFont();
+  %pile.Image = "ItFits:font";
+  // Set the font size in both axis.  This is in world-units and not typicaly font "points".
+  %pile.FontSize = "1.75 3";
+
+  %pile.TextAlignment = "Center";
+
+  %pile.Text = "Drag shapes from this pile ->";
+  %pile.SceneLayer = 0;
+  %pile.setPosition(-25,0);
+  %pile.setLifetime(2);
+  mainScene.add(%pile);
+}
+
+function ItFits::boardTutorial(%this)
+{
+  $board.setVisible(true);
+  for (%i = 0; %i < 13; %i++)
+  {
+    $shapes[%i].setVisible(false);
+  }
+  %line1 = new ImageFont();
+  %line1.Image = "ItFits:font";
+  %line1.FontSize = "1.75 3";
+  %line1.TextAlignment = "Center";
+  %line1.Text = "And put them on";
+  %line1.SceneLayer = 0;
+  %line1.setPosition(25,0);
+  mainScene.add(%line1);
+  %line2 = new ImageFont();
+  %line2.Image = "ItFits:font";
+  %line2.FontSize = "1.75 3";
+  %line2.TextAlignment = "Center";
+  %line2.Text = "<- this board";
+  %line2.SceneLayer = 0;
+  %line2.setPosition(15,-5);
+  mainScene.add(%line2);
 }
