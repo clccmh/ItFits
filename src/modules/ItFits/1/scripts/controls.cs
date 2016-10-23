@@ -20,7 +20,7 @@ function InputManager::onTouchDown(%this, %touchID, %worldposition)
         } else if (%sprite == $skip && %sprite.frame == 1)
         {
           ItFits::nextLevel();
-          //$skip.frame = 0;
+          $skip.frame = 0;
         } else if (%sprite == $expand && %sprite.frame ==1)
         {
           $board.Image = "ItFits:expandedboard";

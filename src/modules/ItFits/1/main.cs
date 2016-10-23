@@ -351,6 +351,8 @@ function ItFits::level5(%this)
 function ItFits::nextLevel(%this)
 {
   $board.setVisible(false);
+  $board.Image = "ItFits:board";
+  $board.size = "50 50";
   for (%i = 0; %i < 25; %i++)
   {
     $shapes[%i].safedelete();
@@ -359,16 +361,24 @@ function ItFits::nextLevel(%this)
   %phrase.Image = "ItFits:font";
   %phrase.FontSize = "2 3";
   %phrase.TextAlignment = "Center";
+  %phrase.SceneLayer = 0;
+  %phrase.setLifetime(3);
   if ($level == 1)
   {
     %phrase.Text = "See...that wasn't too hard.";
+  }
+  else if ($level == 5)
+  {
+    %phrase.Text = "Congrats! You finished It Fits!";
+    %phrase.setLifetime(0);
+    $skip.setVisible(false);
+    $expand.setVisible(false);
+    $delete.setVisible(false);
   }
   else
   {
     %phrase.Text = "Good job!";
   }
-  %phrase.SceneLayer = 0;
-  %phrase.setLifetime(3);
   mainScene.add(%phrase);
 
   %totalTime = (getRealTime() - $startTime)/1000;
