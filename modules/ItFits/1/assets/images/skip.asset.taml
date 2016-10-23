@@ -1,0 +1,7 @@
+<ImageAsset
+    AssetName="skip"
+    ImageFile="skip.png"
+    CellCountX="2"
+    CellCountY="1"
+    CellWidth="100"
+    CellHeight="100" />

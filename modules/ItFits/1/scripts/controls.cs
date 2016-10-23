@@ -10,14 +10,32 @@ function InputManager::onTouchDown(%this, %touchID, %worldposition)
   {
     if ($myobj == null)
     {
-      if (getWord(%picked, %i).getSceneLayer() != 20)
+      %sprite = getWord(%picked, %i);
+      if (%sprite.getSceneLayer() == 2)
+      {
+        if (%sprite == $delete && %sprite.frame == 1)
+        {
+          $shapes[getRandom(0, 13)].setPosition("80 0");
+          $delete.frame = 0;
+        } else if (%sprite == $skip && %sprite.frame == 1)
+        {
+          ItFits::nextLevel();
+          //$skip.frame = 0;
+        } else if (%sprite == $expand && %sprite.frame ==1)
+        {
+          $board.Image = "ItFits:expandedboard";
+          $board.size = "50 60";
+          $expand.frame = 0;
+        }
+      }
+      if (getWord(%picked, %i).getSceneLayer() == 5)
       {
         $myobj = getWord(%picked, %i);
       }
     }
     else if ($myobj.getSceneLayer() > getWord(%picked, %i).getSceneLayer())
     {
-      if (getWord(%picked, %i).getSceneLayer() != 20)
+      if (getWord(%picked, %i).getSceneLayer() == 5)
       {
         $myobj = getWord(%picked, %i);
       }
@@ -27,7 +45,7 @@ function InputManager::onTouchDown(%this, %touchID, %worldposition)
 
 function InputManager::onTouchDragged(%this, %touchID, %worldposition)
 {
-  if($myobj.getSceneLayer() != 20)
+  if($myobj.getSceneLayer() == 5)
   {
     //echo("Position: ", (mRound(%worldposition.X/5 - 2.5)+2.5)*5, " ", (mRound(%worldposition.Y/5 + 2.5)-2.5)*5);
     $myobj.setPosition((mRound(%worldposition.X/5 - 2.5)+2.5)*5, (mRound(%worldposition.Y/5 + 2.5)-2.5)*5);
@@ -51,22 +69,13 @@ function InputManager::onTouchUp(%this, %touchID, %worldposition)
       $overlap.schedule(750, "setVisible", false);
       $myobj.setPosition(20, 0);
     }
+    %picked = mainScene.pickPoint(20, 0);
+    if (%picked.count == 0)
+    {
+      ItFits.nextLevel();
+    }
     $myobj = null;
   }
-}
-
-function InputManager::theSameBlock(%this, %sprite1, %sprite2)
-{
-  for (%i=1; %i <= %sprite1.getSpriteCount(); %i++)
-  {
-    %sprite1.selectSpriteId(%i);
-    %sprite2.selectSpriteId(%i);
-    if (%sprite1.getSpriteLocalPosition() != %sprite2.getSpriteLocalPosition())
-    {
-      return false;
-    }
-  }
-  return true;
 }
 
 function InputManager::testOverlap(%this, %worldposition) {
@@ -88,7 +97,7 @@ function InputManager::testOverlap(%this, %worldposition) {
           {
             for (%y = 1; %y <= %secondSprite.getSpriteCount(); %y++)
             {
-              if (!%this.theSameBlock(%sprite, %secondSprite))
+              if (%sprite != %secondSprite)
               {
                 %secondSprite.selectSpriteId(%y);
                 %secondBlockPosition = (%secondSprite.getPosition().X + %secondSprite.getSpriteLocalPosition().X SPC %secondSprite.getPosition().Y + %secondSprite.getSpriteLocalPosition().Y);
@@ -104,71 +113,6 @@ function InputManager::testOverlap(%this, %worldposition) {
         }
       }
     }
-  }
-  return false;
-}
-
-
-function InputManager::hasBlockOverlap(%this, %worldposition) {
-  %picked = mainScene.pickPoint(%worldposition);
-  for (%i=0; %i<%picked.count; %i++)
-  {
-    %sprite = getWord(%picked, %i);
-    if (%sprite.getSceneLayer() != 20)
-    {
-      for (%x = 1; %x <= %sprite.getSpriteCount(); %x++)
-      {
-        %sprite.selectSpriteId(%x);
-        %blockPosition = (%sprite.getPosition().X + %sprite.getSpriteLocalPosition().X SPC %sprite.getPosition().Y + %sprite.getSpriteLocalPosition().Y);
-        if (%this.anySquaresOverlap(%blockPosition)) {
-          return true;
-        }
-      }
-    }
-  }
-  return false;
-}
-
-function InputManager::anySquaresOverlap(%this, %worldposition) {
-  %count = 0;
-  %total = 0;
-  %picked = mainScene.pickPoint(%worldposition);
-  for (%i=0; %i<%picked.count; %i++)
-  {
-    %sprite = getWord(%picked, %i);
-    if (%sprite.getSceneLayer() != 20)
-    {
-      for (%x = 1; %x <= %sprite.getSpriteCount(); %x++)
-      {
-        %sprite.selectSpriteId(%x);
-        echo("Sprite: ", %i, " X: ", %sprite.getSpriteLocalPosition().X, " Y: ", %sprite.getSpriteLocalPosition().Y);
-        %blockPosition = (%sprite.getPosition().X + %sprite.getSpriteLocalPosition().X SPC %sprite.getPosition().Y + %sprite.getSpriteLocalPosition().Y);
-        if (mainScene.pickPoint(%blockPosition).count-1 > %total)
-        {
-          %total = mainScene.pickPoint(%blockPosition).count-1;
-        }
-        if (%this.isOverlapping(%blockPosition))
-        {
-          %count++;
-        }
-      }
-    }
-  }
-  echo("Count: ", %count, " Total: ", %total);
-  if (%total > 1 && %count == %total) {
-    return true;
-  }
-  return false;
-}
-
-function InputManager::isOverlapping(%this, %worldposition)
-{
-  %count = 0;
-  %picked = mainScene.pickPoint(%worldposition);
-  if (%picked.count > 2)
-  {
-    echo("overlap at: ", %worldposition);
-    return true;
   }
   return false;
 }

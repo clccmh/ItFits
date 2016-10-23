@@ -1,0 +1,5 @@
+<ImageAsset
+    AssetName="expandedboard"
+    ImageFile="expandedboard.png"
+    CellWidth="300"
+    CellHeight="360" />
